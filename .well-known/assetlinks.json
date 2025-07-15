@@ -1,0 +1,22 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "co.id.ajsmsig.cs.simpel",
+      "sha256_cert_fingerprints": [
+        "CB:2F:38:E7:4A:32:B9:D9:BA:A7:50:68:AA:BE:E8:46:62:5A:83:19:35:C9:AF:F4:BC:31:17:92:E9:BA:A7:1D"
+      ]
+    }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "id.co.ajsmsig.cosmos.vegaforfamily",
+      "sha256_cert_fingerprints": [
+        "A8:0C:C0:F2:F2:3F:23:C8:28:22:98:F9:66:C3:4C:B3:EC:53:DB:63:65:94:AC:A2:E0:88:38:C4:1D:67:63:41"
+      ]
+    }
+  }
+]
