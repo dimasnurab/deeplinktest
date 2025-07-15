@@ -131,24 +131,35 @@ app.get("/open-ios", (req, res) => {
   }`;
 
   const html = `
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <title>Opening App...</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <script>
-          window.location = "${customSchemeUrl}";
-          setTimeout(function () {
-            window.location = "${fallbackUrl}";
-          }, 2000);
-        </script>
-      </head>
-      <body>
-        <p style="font-family: sans-serif; text-align: center; margin-top: 40px;">Opening app...</p>
-      </body>
-    </html>
-  `;
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <title>Opening App...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      body {
+        font-family: sans-serif;
+        text-align: center;
+        margin-top: 40px;
+      }
+    </style>
+  </head>
+  <body>
+    <p>Opening app...</p>
+    <a id="openAppLink" href="${customSchemeUrl}" style="display: none;">Open App</a>
 
+    <script>
+      window.onload = function () {
+        document.getElementById('openAppLink').click();
+
+        setTimeout(function () {
+          window.location.href = "${fallbackUrl}";
+        }, 2000);
+      };
+    </script>
+  </body>
+</html>
+`;
   res.set("Content-Type", "text/html");
   res.send(html);
 });
