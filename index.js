@@ -5,6 +5,7 @@ const helmet = require("helmet");
 
 const app = express();
 const port = 3000;
+const fs = require("fs");
 
 app.use(helmet());
 app.use(cookieParser());
@@ -46,14 +47,13 @@ app.get("/.well-known/apple-app-site-association", (req, res) => {
     ".well-known",
     "apple-app-site-association"
   );
-
-  res.type("application/json");
-  res.sendFile(filePath, (err) => {
-    if (err) {
-      console.error("Gagal mengirim AASA file:", err);
-      res.status(404).send("apple-app-site-association not found");
-    }
-  });
+  if (fs.existsSync(filePath)) {
+    res.setHeader("Content-Type", "application/json");
+    res.setHeader("Cache-Control", "no-store");
+    res.sendFile(filePath);
+  } else {
+    res.status(404).send("Not found");
+  }
 });
 
 app.get("/intentdeeplink", (req, res) => {
