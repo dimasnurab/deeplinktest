@@ -10,6 +10,7 @@ const fs = require("fs");
 app.use(helmet());
 app.use(cookieParser());
 app.use(express.json()); // Parsing JSON body POST
+
 app.get("/.well-known/apple-app-site-association", (req, res) => {
   const filePath = path.join(
     __dirname,
