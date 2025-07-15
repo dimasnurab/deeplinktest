@@ -1,0 +1,33 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "Q6J5BN753Q.co.id.ajsmsig.cs.simpel",
+        "paths": [
+          "/msigdeeplink/*",
+          "/intentdeeplink/*",
+          "/api/*"
+        ],
+        "components": [
+          {
+            "/": "/*"
+          }
+        ]
+      },
+      {
+        "appID": "Q6J5BN753Q.id.co.ajsmsig.cosmos.vegaforfamily",
+        "paths": [
+          "/msigdeeplink/*",
+          "/intentdeeplink/*",
+          "/api/*"
+        ],
+        "components": [
+          {
+            "/": "/*"
+          }
+        ]
+      }
+    ]
+  }
+}
