@@ -10,7 +10,20 @@ const fs = require("fs");
 app.use(helmet());
 app.use(cookieParser());
 app.use(express.json()); // Parsing JSON body POST
-
+app.get("/.well-known/apple-app-site-association", (req, res) => {
+  const filePath = path.join(
+    __dirname,
+    ".well-known",
+    "apple-app-site-association"
+  );
+  if (fs.existsSync(filePath)) {
+    res.setHeader("Content-Type", "application/json");
+    res.setHeader("Cache-Control", "no-store");
+    res.sendFile(filePath);
+  } else {
+    res.status(404).send("Not found");
+  }
+});
 // Static app mapping
 const appMapping = {
   93: {
@@ -40,21 +53,6 @@ function detectPlatform(req) {
 
 // Decode Base64 safely
 const atob = (b64) => Buffer.from(b64, "base64").toString("utf-8");
-
-app.get("/.well-known/apple-app-site-association", (req, res) => {
-  const filePath = path.join(
-    __dirname,
-    ".well-known",
-    "apple-app-site-association"
-  );
-  if (fs.existsSync(filePath)) {
-    res.setHeader("Content-Type", "application/json");
-    res.setHeader("Cache-Control", "no-store");
-    res.sendFile(filePath);
-  } else {
-    res.status(404).send("Not found");
-  }
-});
 
 app.get("/intentdeeplink", (req, res) => {
   try {
