@@ -163,14 +163,21 @@ app.get("/open-ios", (req, res) => {
 });
 
 const apiKeyMiddleware = (req, res, next) => {
-  const apiKey = (req.headers["api-key"] || "").trim();
-  const validApiKey = (environment.apiKey || "").trim();
+  const apiKey = req.headers["api-key"];
+  const validApiKey = environment.apiKey;
 
-  // console.log("env.apiKey :", JSON.stringify(validApiKey));
-  // console.log("req.headers[api-key]:", JSON.stringify(apiKey));
-  // console.log("Equal?", apiKey === validApiKey);
+  if (!apiKey) {
+    return res
+      .status(401)
+      .json({ error: "Oops! Kamu tidak punya akses ke sini." });
+  }
 
-  if (apiKey !== validApiKey) {
+  if (!validApiKey) {
+    console.error("Oops! Kamu tidak punya akses ke sini.");
+    return res.status(500).json({ error: "internal server error" });
+  }
+
+  if (apiKey.trim() !== validApiKey.trim()) {
     return res
       .status(401)
       .json({ error: "Oops! Kamu tidak punya akses ke fitur ini." });
