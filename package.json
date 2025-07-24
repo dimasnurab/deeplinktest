@@ -1,18 +1,23 @@
 {
   "name": "deeplinkbe",
   "version": "1.0.0",
+  "description": "Backend Deeplink Redirector",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "node index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Dimas",
   "license": "ISC",
-  "description": "",
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "express": "^5.1.0",
-    "helmet": "^8.1.0"
+    "helmet": "^8.1.0",
+    "dotenv": "^16.4.5"
   }
 }

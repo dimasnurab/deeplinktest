@@ -1,8 +1,17 @@
-const express = require("express");
-const path = require("path");
-const cookieParser = require("cookie-parser");
-const helmet = require("helmet");
-const fs = require("fs");
+import express from "express";
+import path from "path";
+import cookieParser from "cookie-parser";
+import helmet from "helmet";
+import fs from "fs";
+import dotenv from "dotenv";
+import environment from "./env/index.js";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
+dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 const port = 3000;
@@ -154,12 +163,19 @@ app.get("/open-ios", (req, res) => {
 });
 
 const apiKeyMiddleware = (req, res, next) => {
-  const apiKey = req.headers["api-key"];
-  if (apiKey !== "396f943e-20b4-4040-83f4-0aebf823e4fd") {
+  const apiKey = (req.headers["api-key"] || "").trim();
+  const validApiKey = (environment.apiKey || "").trim();
+
+  // console.log("env.apiKey :", JSON.stringify(validApiKey));
+  // console.log("req.headers[api-key]:", JSON.stringify(apiKey));
+  // console.log("Equal?", apiKey === validApiKey);
+
+  if (apiKey !== validApiKey) {
     return res
       .status(401)
       .json({ error: "Oops! Kamu tidak punya akses ke fitur ini." });
   }
+
   next();
 };
 
@@ -185,10 +201,9 @@ app.post("/generate-link", apiKeyMiddleware, (req, res) => {
       new URLSearchParams(sanitizedParams).toString()
     ).toString("base64");
 
-    const domain = "https://deeplink-sandbox.msiglife.co.id";
-    const deeplinkUrl = `${domain}/intentdeeplink?payload=${encodeURIComponent(
-      payload
-    )}`;
+    const deeplinkUrl = `${
+      environment.domain
+    }/intentdeeplink?payload=${encodeURIComponent(payload)}`;
 
     return res.json({ deeplink: deeplinkUrl });
   } catch (err) {
