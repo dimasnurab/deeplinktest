@@ -2,14 +2,15 @@ const express = require("express");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const helmet = require("helmet");
+const fs = require("fs");
 
 const app = express();
 const port = 3000;
-const fs = require("fs");
 
 app.use(helmet());
 app.use(cookieParser());
-app.use(express.json()); // Parsing JSON body POST
+app.use(express.json());
+app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/.well-known/apple-app-site-association", (req, res) => {
   const filePath = path.join(
@@ -25,7 +26,7 @@ app.get("/.well-known/apple-app-site-association", (req, res) => {
     res.status(404).send("Not found");
   }
 });
-// Static app mapping
+
 const appMapping = {
   93: {
     androidPackage: "co.id.ajsmsig.cs.simpel",
@@ -41,18 +42,16 @@ const appMapping = {
   },
 };
 
-// Helper to detect platform
 function detectPlatform(req) {
   const ua = req.headers["user-agent"] || "";
   if (/android/i.test(ua)) return "android";
   if (/iphone|ipad|ipod/i.test(ua)) return "ios";
-  if (/macintosh|mac os x/i.test(ua)) return "android"; // for desktop testing
+  if (/macintosh|mac os x/i.test(ua)) return "android";
   if (/windows nt/i.test(ua)) return "windows";
   if (/linux/i.test(ua)) return "linux";
   return "web";
 }
 
-// Decode Base64 safely
 const atob = (b64) => Buffer.from(b64, "base64").toString("utf-8");
 
 app.get("/intentdeeplink", (req, res) => {
@@ -116,7 +115,6 @@ app.get("/intentdeeplink", (req, res) => {
   }
 });
 
-// HTML intermediate page for iOS to trigger custom scheme
 app.get("/open-ios", (req, res) => {
   const appName = String(req.query.app);
   const appInfo = appMapping[appName] || {};
@@ -133,39 +131,39 @@ app.get("/open-ios", (req, res) => {
   const html = `
   <!DOCTYPE html>
   <html>
-  <head>
-    <title>Opening App...</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <style>
-      body {
-        font-family: sans-serif;
-        text-align: center;
-        margin-top: 40px;
-      }
-    </style>
-  </head>
-  <body>
-    <p>Opening app...</p>
-    <a id="openAppLink" href="${customSchemeUrl}" style="display: none;">Open App</a>
-
-    <script>
-      window.onload = function () {
-        document.getElementById('openAppLink').click();
-
-        setTimeout(function () {
-          window.location.href = "${fallbackUrl}";
-        }, 2000);
-      };
-    </script>
-  </body>
-</html>
+    <head>
+      <title>Opening App...</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <style>
+        body {
+          font-family: sans-serif;
+          text-align: center;
+          margin-top: 40px;
+        }
+      </style>
+      <script src="/open-ios.js"></script>
+    </head>
+    <body data-fallback="${fallbackUrl}" data-scheme="${customSchemeUrl}">
+      <p>Opening app...</p>
+    </body>
+  </html>
 `;
+
   res.set("Content-Type", "text/html");
   res.send(html);
 });
 
-// Endpoint POST untuk generate deeplink
-app.post("/generate-link", (req, res) => {
+const apiKeyMiddleware = (req, res, next) => {
+  const apiKey = req.headers["api-key"];
+  if (apiKey !== "396f943e-20b4-4040-83f4-0aebf823e4fd") {
+    return res
+      .status(401)
+      .json({ error: "Oops! Kamu tidak punya akses ke fitur ini." });
+  }
+  next();
+};
+
+app.post("/generate-link", apiKeyMiddleware, (req, res) => {
   try {
     const params = req.body;
 
